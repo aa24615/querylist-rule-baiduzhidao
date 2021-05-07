@@ -1,0 +1,21 @@
+{
+  "name": "wangqs/querylist-rule-baiduzhidao",
+  "description": "QueryList Plugin: baiduzhidao searcher. QueryList百度知道搜索插件",
+  "require": {
+    "PHP": ">=7.0"
+  },
+  "require-dev": {
+    "jaeger/querylist": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "QL\\Ext\\": ""
+    }
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "wangqs"
+    }
+  ]
+}
