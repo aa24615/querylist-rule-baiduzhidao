@@ -58,10 +58,12 @@
 		public function page ( $page = 1 , $realURL = false ) {
 			return $this->query( $page )
 			            ->query()
-			            ->encoding( 'UTF-8' , 'GB2312' )
-			            ->removeHead()
 			            ->getData( function ( $item ) use ( $realURL )
 			            {
+				            if ( isset( $item['title'] ) && $item['title'] ) {
+					            $encode = mb_detect_encoding( $item['title'] , array( "ASCII" , 'UTF-8' , "GB2312" , "GBK" , 'BIG5' ) );
+					            $item['title'] = iconv( $encode , 'UTF-8' , $item['title'] );
+				            }
 				            $realURL && $item['link'] = $this->getRealURL( $item['link'] );
 				            return $item;
 			            } );
