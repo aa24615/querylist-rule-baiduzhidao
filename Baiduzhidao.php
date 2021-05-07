@@ -58,6 +58,8 @@
 		public function page ( $page = 1 , $realURL = false ) {
 			return $this->query( $page )
 			            ->query()
+			            ->encoding( 'UTF-8' , 'GB2312' )
+			            ->removeHead()
 			            ->getData( function ( $item ) use ( $realURL )
 			            {
 				            $realURL && $item['link'] = $this->getRealURL( $item['link'] );
