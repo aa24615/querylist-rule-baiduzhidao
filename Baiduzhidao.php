@@ -16,7 +16,7 @@
 		const RULES = [
 			'title' => [ '.dt>a' , 'text' ] ,
 			'link'  => [ '.dt>a' , 'href' ],
-			'best_answer' => ['.answer','text','-.i-answer-text']
+			'best_answer' => ['.answer','text','-i']
 		];
 		const RANGE = '.list>.dl';
 		protected $ql;
@@ -65,6 +65,12 @@
 					            $encode = mb_detect_encoding( $item['title'] , array( "ASCII" , 'UTF-8' , "GB2312" , "GBK" , 'BIG5' ) );
 					            $item['title'] = iconv( $encode , 'UTF-8' , $item['title'] );
 				            }
+				            
+				            if ( isset( $item['best_answer'] ) && $item['best_answer'] ) {
+					            $encode = mb_detect_encoding( $item['best_answer'] , array( "ASCII" , 'UTF-8' , "GB2312" , "GBK" , 'BIG5' ) );
+					            $item['best_answer'] = iconv( $encode , 'UTF-8' , $item['best_answer'] );
+				            }
+				            
 				            $realURL && $item['link'] = $this->getRealURL( $item['link'] );
 				            return $item;
 			            } );
