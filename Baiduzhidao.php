@@ -15,7 +15,8 @@
 		const API = 'https://zhidao.baidu.com/search';
 		const RULES = [
 			'title' => [ '.dt>a' , 'text' ] ,
-			'link'  => [ '.dt>a' , 'href' ]
+			'link'  => [ '.dt>a' , 'href' ],
+			'best_answer' => ['.answer','text','-.i-answer-text']
 		];
 		const RANGE = '.list>.dl';
 		protected $ql;
