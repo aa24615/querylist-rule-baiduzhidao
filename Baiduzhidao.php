@@ -16,7 +16,7 @@
 		const RULES = [
 			'title' => [ '.dt>a' , 'text' ] ,
 			'link'  => [ '.dt>a' , 'href' ],
-			'best_answer' => ['.answer','text','-i']
+			'best_answer' => ['.answer','text']
 		];
 		const RANGE = '.list>.dl';
 		protected $ql;
