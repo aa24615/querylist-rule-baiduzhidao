@@ -2,7 +2,8 @@
   "name": "zyan/querylist-rule-baiduzhidao",
   "description": "QueryList Plugin: baiduzhidao searcher. QueryList百度知道搜索插件",
   "require": {
-    "PHP": ">=7.0"
+    "PHP": ">=7.0",
+    "phpunit/phpunit": "^9.5"
   },
   "require-dev": {
     "jaeger/querylist": "^4.0"
@@ -10,6 +11,11 @@
   "autoload": {
     "psr-4": {
       "Zyan\\QLPlugin\\": "./src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Zyan\\Tests\\": "./tests/"
     }
   },
   "license": "MIT",
