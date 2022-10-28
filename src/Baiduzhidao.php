@@ -10,17 +10,11 @@ use QL\QueryList;
  *
  * @package Zyan\QLPlugin
  *
- * @author 读心印 <aa24615@qq.com>
+ * @author 读心印 <aa24615@qq.com> www.zyan.me
  */
 class Baiduzhidao implements PluginContract
 {
     const API = 'https://zhidao.baidu.com/search';
-    const RULES = [
-        'title' => ['.dt>a', 'text'],
-        'link' => ['.dt>a', 'href'],
-        'best_answer' => ['.answer', 'text']
-    ];
-    const RANGE = '.list>.dl';
     protected $ql;
     protected $keyword;
     protected $pageNumber = 10;
@@ -36,9 +30,8 @@ class Baiduzhidao implements PluginContract
 
     public function __construct(QueryList $ql, $pageNumber)
     {
-        $this->ql = $ql->rules(self::RULES)
-            ->range(self::RANGE);
         $this->pageNumber = $pageNumber;
+        $this->ql = $ql;
     }
 
     public static function install(QueryList $queryList, ...$opt)
@@ -61,36 +54,37 @@ class Baiduzhidao implements PluginContract
         return $this;
     }
 
-    public function page($page = 1, $realURL = false)
+    protected function query($page)
     {
-        return $this->query($page)
-            ->query()
-            ->getData(function ($item) use ($realURL) {
-                if (isset($item['title']) && $item['title']) {
-                    $encode = mb_detect_encoding($item['title'], array("ASCII", 'UTF-8', "GB2312", "GBK", 'BIG5'));
-                    $item['title'] = iconv($encode, 'UTF-8', $item['title']);
-                }
+        $this->ql->rules([
+            'title' => ['.dt>a', 'text'],
+            'link' => ['.dt>a', 'href'],
+            'best_answer' => ['.answer', 'text']
+        ])
+            ->range('.list>.dl')
+            ->get(self::API, [
+                'word' => $this->keyword,
+                'rn' => $this->pageNumber,
+                'ie' => 'utf-8',
+                'pn' => $this->pageNumber * ($page - 1)
+            ], $this->httpOpt);
 
-                if (isset($item['best_answer']) && $item['best_answer']) {
-                    $encode = mb_detect_encoding($item['best_answer'], array("ASCII", 'UTF-8', "GB2312", "GBK", 'BIG5'));
-                    $item['best_answer'] = iconv($encode, 'UTF-8', $item['best_answer']);
-                }
-
-                $realURL && $item['link'] = $this->getRealURL($item['link']);
-                return $item;
-            });
-    }
-
-    protected function query($page = 1)
-    {
-        $this->ql->get(self::API, [
-            'word' => $this->keyword,
-            'rn' => $this->pageNumber,
-            'ie' => 'utf-8',
-            'pn' => $this->pageNumber * ($page - 1)
-        ], $this->httpOpt);
         return $this->ql;
     }
+
+    public function getList($page = 1, $realURL = false)
+    {
+        return $this->query($page)
+            ->encoding('UTF-8', 'GB2312')
+            ->removeHead()
+            ->query()
+            ->getData(function ($item) use ($realURL) {
+                $realURL && $item['link'] = $this->getRealURL($item['link']);
+                return $item;
+            })
+            ->all();
+    }
+
 
     /**
      * 得到百度跳转的真正地址
@@ -102,26 +96,44 @@ class Baiduzhidao implements PluginContract
         if (empty($url)) {
             return $url;
         }
-        $header = get_headers($url, 1);
-        if (strpos($header[0], '301') || strpos($header[0], '302')) {
-            if (is_array($header['Location'])) {
-                //return $header['Location'][count($header['Location'])-1];
-                return $header['Location'][0];
+        try {
+            $header = get_headers($url, 1);
+            if (strpos($header[0], '301') || strpos($header[0], '302')) {
+                if (is_array($header['Location'])) {
+                    //return $header['Location'][count($header['Location'])-1];
+                    return $header['Location'][0];
+                } else {
+                    return $header['Location'];
+                }
             } else {
-                return $header['Location'];
+                return $url;
             }
-        } else {
+        } catch (\Exception $exception) {
             return $url;
         }
     }
 
-    public function getCountPage()
+    /**
+     * getPage.
+     *
+     * @return int
+     *
+     * @author 读心印 <aa24615@qq.com>
+     */
+    public function getPage()
     {
         $count = $this->getCount();
         $countPage = ceil($count / $this->pageNumber);
         return $countPage;
     }
 
+    /**
+     * getCount.
+     *
+     * @return int
+     *
+     * @author 读心印 <aa24615@qq.com>
+     */
     public function getCount()
     {
         $count = 0;
@@ -133,5 +145,27 @@ class Baiduzhidao implements PluginContract
         }
         return (int)$count;
     }
+
+    /**
+     * getBody.
+     *
+     * @param string $url
+     *
+     * @return array|\Illuminate\Support\Collection|\Tightenco\Collect\Support\Collection
+     *
+     * @author 读心印 <aa24615@qq.com>
+     */
+    public function getBody($url)
+    {
+        $list = $this->ql->get($url, [], $this->httpOpt)
+            ->encoding('UTF-8', 'GB2312')
+            ->removeHead()
+            ->find('.rich-content-container')
+            ->htmls()
+            ->all();
+
+        return $list;
+    }
+
 
 }

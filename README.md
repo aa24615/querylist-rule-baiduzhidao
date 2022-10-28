@@ -25,9 +25,12 @@ use QL\QueryList;
 
 $ql = QueryList::getInstance();
 $ql->use(Baiduzhidao::class);
-$list =  $ql->baiduzhidao()->search('usb')->page(1);
 
-print_r($list->all());
+
+//列表页
+$list =  $ql->baiduzhidao()->search('php官网是什么')->getList(1);
+
+print_r($list);
 
 Array
 (
@@ -45,6 +48,17 @@ Array
             [best_answer] => 答：php新版是5.5的 你要升级的话， http://www.php.net window系统的话， 去这里下载http://windows.php.net
         )
     ...
+)
+
+//内容页(答案)
+$body =  $ql->baiduzhidao()->getBody('http://zhidao.baidu.com/question/562434686892368412.html');
+
+print_r($list);
+
+Array
+(
+    [0] => 120w,小米12 Pro支持120W 小米澎湃秒充功能，我们对它的快充功能进行了测试。30分快充测试数据经过实测得知，从1%电量开始使用原装120W 小米澎湃秒充套装将小米12 Pro充满需要22分钟左右。值得一提的是，本次小米12 Pro随配的120W充电器采用了USB-A接口，充电线为USB-A to USB-C数据线，与市面上常见的USB-C to USB-C数据线并不通用，这就意味着用户需要使用原装120W快充套装才能实现最快的充电速度。
+    [1] => 12Pro标配充电器则可满血输出最高120W功率。支持120W有线快充,50W无线快充,10W无线反向充电。
 )
 
 ```

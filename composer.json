@@ -3,7 +3,8 @@
   "description": "QueryList Plugin: baiduzhidao searcher. QueryList百度知道搜索插件",
   "require": {
     "PHP": ">=7.0",
-    "phpunit/phpunit": "^9.5"
+    "phpunit/phpunit": "^9.5",
+    "ext-iconv": "*"
   },
   "require-dev": {
     "jaeger/querylist": "^4.0"
